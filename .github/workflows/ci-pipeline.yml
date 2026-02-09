@@ -22,10 +22,57 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
 
+  sast:
+    name: SAST - Static Application Security Testing
+    runs-on: ubuntu-latest
+    needs: secrets-scan # Run after secrets scan passes
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/owasp-top-ten
+            p/javascript
+            p/typescript
+        env:
+          SEMGREP_RULES: auto
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+        continue-on-error: true
+
+      - name: Upload SAST results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sast-results
+          path: semgrep.sarif
+          retention-days: 30
+
+      - name: Check for critical/high severity issues
+        run: |
+          if [ -f semgrep.sarif ]; then
+            # Count high and critical severity issues
+            HIGH_COUNT=$(jq '[.runs[].results[] | select(.level == "error")] | length' semgrep.sarif || echo "0")
+            echo "High/Critical severity issues found: $HIGH_COUNT"
+            
+            if [ "$HIGH_COUNT" -gt 0 ]; then
+              echo "❌ SAST quality gate failed: Found $HIGH_COUNT high/critical severity issues"
+              exit 1
+            else
+              echo "✅ SAST quality gate passed: No high/critical severity issues found"
+            fi
+          else
+            echo "⚠️  No SARIF file generated"
+          fi
+
   build-and-test:
     name: Build and Test
     runs-on: ubuntu-latest
-    needs: secrets-scan # Only run if secrets scan passes
+    needs: [secrets-scan, sast] # Run after both secrets scan and SAST pass
 
     steps:
       - name: Checkout code
