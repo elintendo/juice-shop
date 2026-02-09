@@ -1,0 +1,64 @@
+# GitLeaks Configuration for DevSecOps Pipeline
+# This configuration defines rules for detecting secrets in the codebase
+
+title = "GitLeaks Configuration for OWASP Juice Shop Pipeline"
+
+[extend]
+# useDefault will extend the base configuration with the default gitleaks config:
+# https://github.com/gitleaks/gitleaks/blob/master/config/gitleaks.toml
+useDefault = true
+
+[allowlist]
+description = "Global allowlist"
+regexes = [
+  # Allow example/dummy secrets in documentation
+  '''(?i)example''',
+  '''(?i)dummy''',
+  '''(?i)sample''',
+  # Allow test fixtures
+  '''test/fixtures/.*''',
+  '''tests?/.*\.test\.js''',
+]
+
+paths = [
+  # Ignore package lock files (they may contain registry URLs that look like secrets)
+  '''package-lock\.json''',
+  '''yarn\.lock''',
+  # Ignore node_modules
+  '''node_modules/.*''',
+  # Ignore documentation that explains secrets
+  '''.*\.md''',
+  # Ignore screenshots
+  '''screenshots/.*''',
+]
+
+# Additional custom rules can be added here
+[[rules]]
+id = "hardcoded-api-key"
+description = "Detected hardcoded API key"
+regex = '''(?i)(api[_-]?key|apikey)["\s:=]+[a-zA-Z0-9]{20,}'''
+tags = ["api", "key", "credentials"]
+
+[[rules]]
+id = "hardcoded-password"
+description = "Detected hardcoded password"
+regex = '''(?i)(password|passwd|pwd)["\s:=]+[^,\s]{8,}'''
+tags = ["password", "credentials"]
+
+[[rules]]
+id = "hardcoded-database-connection"
+description = "Detected hardcoded database connection string"
+regex = '''(?i)(mongodb|mysql|postgres|postgresql):\/\/[^\s]+:[^\s]+@'''
+tags = ["database", "credentials"]
+
+[[rules]]
+id = "hardcoded-jwt-secret"
+description = "Detected hardcoded JWT secret"
+regex = '''(?i)(jwt[_-]?secret|jwt[_-]?key)["\s:=]+[a-zA-Z0-9]{20,}'''
+tags = ["jwt", "secret"]
+
+[[rules]]
+id = "hardcoded-aws-key"
+description = "Detected AWS Access Key ID"
+regex = '''AKIA[0-9A-Z]{16}'''
+tags = ["aws", "credentials"]

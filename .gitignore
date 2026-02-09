@@ -1,67 +1,55 @@
-# App
+# Dependencies
 node_modules/
-juiceshop.sqlite
-order_*.pdf
-app/
-!frontend/src/app
-uploads/complaints/*.*
-!uploads/complaints/.gitkeep
-ftp/legal.md
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 package-lock.json
-i18n/*.json
-i18n/*.invalid
-!frontend/src/assets/i18n/*.json
-!data/static/i18n/*.json
-data/chatbot/*.*
-!data/chatbot/.gitkeep
-/data/juiceshop.sqlite-journal
 
-# Build
-.nyc_output/
-.sass-cache/
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Secrets and credentials
+*.pem
+*.key
+*.cert
+secrets/
+credentials/
+
+# Test results
+test-results/
+coverage/
+*.lcov
+
+# Build output
 build/
-cache/
 dist/
-logs/
-vagrant/.vagrant/
-*.orig
-*.out
-*.log
-JSON
-JSON.map
-frontend/src/**/*.js
-/bom.json
-/bom.xml
+*.tgz
 
-# IDEs
-.idea/
+# IDE and editor files
 .vscode/
-out/
-*.eml
-*.iml
-*.iws
+.idea/
 *.swp
+*.swo
+*~
 
-# Branch ghpages
-assets/
-!frontend/src/assets/
-
-# Custom configuration files
-config/*.yml
-!config/addo.yml
-!config/bodgeit.yml
-!config/ctf.yml
-!config/fbctf.yml
-!config/default.yml
-!config/juicebox.yml
-!config/quiet.yml
-!config/test.yml
-!config/7ms.yml
-!config/mozilla.yml
-!config/unsafe.yml
-!config/tutorial.yml
-!config/oss.yml
-!config/defcon33.yml
-
-# System Files
+# OS files
 .DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# GitLeaks reports
+gitleaks-report.json
+gitleaks-report.sarif
+
+# Do NOT ignore .env.example (this is safe to commit)
+!.env.example
