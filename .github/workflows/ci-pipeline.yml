@@ -40,7 +40,14 @@ jobs:
         run: npm install
         env:
           # Example: Using secrets properly from GitHub Secrets
-          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          API_KEY: ${{ secrets.API_KEY }}
+
+      - name: Verify secrets are masked
+        run: |
+          echo "Testing secret masking..."
+          echo "API_KEY value: $API_KEY"
+          echo "This demonstrates that secrets are automatically masked in logs"
+        env:
           API_KEY: ${{ secrets.API_KEY }}
 
       - name: Run tests
@@ -48,7 +55,6 @@ jobs:
         continue-on-error: false
         env:
           # Secrets passed securely to test environment
-          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
           API_KEY: ${{ secrets.API_KEY }}
 
       - name: Upload build artifacts
