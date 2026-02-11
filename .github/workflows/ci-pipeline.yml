@@ -39,10 +39,9 @@ jobs:
             p/owasp-top-ten
             p/javascript
             p/typescript
+          generateSarif: "1"
         env:
           SEMGREP_RULES: auto
-          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
-        continue-on-error: true
 
       - name: Upload SAST results
         if: always()
@@ -51,23 +50,6 @@ jobs:
           name: sast-results
           path: semgrep.sarif
           retention-days: 30
-
-      - name: Check for critical/high severity issues
-        run: |
-          if [ -f semgrep.sarif ]; then
-            # Count high and critical severity issues
-            HIGH_COUNT=$(jq '[.runs[].results[] | select(.level == "error")] | length' semgrep.sarif || echo "0")
-            echo "High/Critical severity issues found: $HIGH_COUNT"
-            
-            if [ "$HIGH_COUNT" -gt 0 ]; then
-              echo "❌ SAST quality gate failed: Found $HIGH_COUNT high/critical severity issues"
-              exit 1
-            else
-              echo "✅ SAST quality gate passed: No high/critical severity issues found"
-            fi
-          else
-            echo "⚠️  No SARIF file generated"
-          fi
 
   build-and-test:
     name: Build and Test
